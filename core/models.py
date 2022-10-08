@@ -1,3 +1,4 @@
+from email.policy import default
 from django.db import models
 from django.utils import timezone
 
@@ -40,32 +41,37 @@ as backard relationship these relations are not many to many these are may to on
 I am using foreign key in Experiences,Education ...
 '''
 class Experience(models.Model):
-    applicant=models.ForeignKey(Profile,on_delete=models.CASCADE)
+    applicant=models.ForeignKey(Profile,related_name='experiences',on_delete=models.CASCADE)
     position= models.CharField(max_length=64)
     institutionName = models.CharField(max_length=64)
     startDate=models.DateField()
     endDate=models.DateField(null=True)
     work=models.TextField()
     def __str__(self) -> str:
-        return self.position + "|" + self.institutionName
+        return self.position + " | " + self.institutionName
 
 class Project(models.Model):
-    applicant=models.ForeignKey(Profile,on_delete=models.CASCADE)
+    applicant=models.ForeignKey(Profile,related_name='projects',on_delete=models.CASCADE)
+    name=models.CharField(max_length=64)
     startDate=models.DateField()
     endDate=models.DateField(null=True)
     work=models.TextField()
+    def __str__(self) -> str:
+        return self.name
     
 
 class Education(models.Model):
-    applicant=models.ForeignKey(Profile,on_delete=models.CASCADE)
+    applicant=models.ForeignKey(Profile,related_name='education',on_delete=models.CASCADE)
+    degreeName=models.CharField(max_length=64,default='Batchelors')
+    major=models.CharField(max_length=64,null=True)
     collegeName=models.CharField(max_length=64)
     startYear=models.DecimalField(max_digits=4,decimal_places=0)
     endYear=models.DecimalField(max_digits=4,decimal_places=0,null=True)
     def __str__(self) -> str:
-        return self.collegeName
+        return '%s %s %s' % (self.degreeName,self.major,self.collegeName)
 
 class Certification(models.Model):
-    applicant=models.ForeignKey(Profile,on_delete=models.CASCADE)
+    applicant=models.ForeignKey(Profile,related_name='certifications',on_delete=models.CASCADE)
     name=models.CharField(max_length=64)
     certificationId=models.CharField(max_length=64,null=True)
     issuingAthority=models.CharField(max_length=64)
@@ -75,7 +81,7 @@ class Certification(models.Model):
 
 class Achievement(models.Model):
     #applicant=models.On
-    applicant=models.ForeignKey(Profile,on_delete=models.CASCADE)
+    applicant=models.ForeignKey(Profile,related_name='achieveements',on_delete=models.CASCADE)
     name=models.CharField(max_length=64)
     def __str__(self) -> str:
         return self.name
